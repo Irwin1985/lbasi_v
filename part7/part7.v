@@ -206,11 +206,6 @@ fn (mut p Parser) parse() ?Ast {
 // INTERPRETER
 // ======================================================================== //
 
-interface NodeVisitor {
-	visit(node Ast) Ast
-}
-
-
 struct Interpreter {
 mut:
 	parser Parser
@@ -243,15 +238,12 @@ fn (mut i Interpreter) visit(mut node Ast) ?Ast {
 fn (mut i Interpreter) visit_bin_op(mut node BinOp) ?Ast {
 	mut left := 0
 	mut right := 0
+	
 	mut result := i.visit(mut node.left) or { return err }
-	if result.type_name() == 'int' {
-		left = result as int
-	}
+	left = result as int
 
 	result = i.visit(mut node.right) or { return err }
-	if result.type_name() == 'int' {
-		right = result as int
-	}
+	right = result as int
 
 	if node.op.kind == plus {
 		return left + right
